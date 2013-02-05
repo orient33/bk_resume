@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">备份恢复</string>
+    
+    <string name="hello_world">备份联系人</string>
+    <string name="hello_world2">恢复联系人</string>
+    <string name="hello_world3">备份短信</string>
+    <string name="hello_world4">恢复短信</string>
+    <string name="hello_world5">备份通话记录</string>
+    <string name="hello_world6">恢复通话记录</string>
+    
+    <string name="exit">退出</string>
+    <string name="about">关于</string>
+    <string name="about_msg">版本：2.1.20130203\n作者：orient33\n如果你有好的建议，请联系email:459399671@qq.com</string>
+    <string name="sd_not_ready">SD卡未准备就绪 !</string>
+    
+    <string name="find">找到  </string>
+	<string name="backup"> 备份了  </string>
+	<string name="resume"> 恢复了  </string>
+	
+	<string name="sms_sum">  条短信  </string>
+	<string name="backup_sms"> 正在备份短信 .. </string>
+	<string name="resume_sms"> 正在恢复短信 .. </string>
+	
+	<string name="con_sum">  个联系人  </string>
+	<string name="backup_con"> 正在备份联系人 .. </string>
+	<string name="resume_con"> 正在恢复联系人 .. </string>
+	
+	<string name="calllog_sum"> 条记录</string>
+	<string name="backup_calllog">正在备份通话记录..</string>
+	<string name="resume_calllog">正在恢复通话记录..</string>
+</resources>

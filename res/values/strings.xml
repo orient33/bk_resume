@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Backup_Resume</string>
+    
+    <string name="hello_world">Backup Contacts </string>
+    <string name="hello_world2">Resume Contacts </string>
+    <string name="hello_world3">Backup Sms</string>
+    <string name="hello_world4">Resume Sms</string>
+    <string name="hello_world5">Backup Call Log</string>
+    <string name="hello_world6">resume Call Log</string>
+    
+    <string name="exit">Exit</string>
+    <string name="about">About</string>
+    <string name="about_msg">Version: 2.1.20130203 beta\nAuthor： orient33\nPlease email to email:459399671@qq.com ,
+        if you have some advices or bug etc.</string>
+    <string name="sd_not_ready">SD card is not ready !</string>    
+    
+    <string name="find">Find  </string>
+	<string name="backup">Backup  </string>
+	<string name="resume">Resume  </string>
+	
+	<string name="sms_sum">  SMS  </string>
+	<string name="backup_sms"> backup SMS .. </string>
+	<string name="resume_sms"> resume SMS .. </string>
+	
+	<string name="con_sum">  Contact  </string>
+	<string name="backup_con"> backup CONTACTS .. </string>
+	<string name="resume_con"> resume CONTACTS .. </string>
+	
+	<string name="calllog_sum">Call Log</string>
+	<string name="backup_calllog">backup Call Log</string>
+	<string name="resume_calllog">resume Call Log</string>
+</resources>
