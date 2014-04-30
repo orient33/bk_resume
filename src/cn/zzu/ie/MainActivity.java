@@ -3,16 +3,24 @@ package cn.zzu.ie;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.IPackageDataObserver;
+import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.StatFs;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +32,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity/*implements View.OnClickListener*/{
 
     //private View v[];
-    private static ProgressDialog mProgressDialog;
+    private static ProgressDialog mProgressDialog,mPd;
     private String mDbFileName;
 	private MyDB mdb;
 	private Handler mHandler;
@@ -49,10 +57,11 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
 						(int[])msg.obj,R.string.con_sum,
 						R.string.backup));
 				break;
-			case R.id.view2:
+			case R.id.view2:     //resume contacts
 				mAct.showToast(getStrings(mAct, R.string.find,
 						(int[])msg.obj,R.string.con_sum,
 						R.string.resume));
+				break;
 			case R.id.view3:	// backup sms
 				mAct.showToast(getStrings(mAct, R.string.find,
 						(int[]) msg.obj, R.string.sms_sum,
@@ -75,7 +84,6 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
 			    break;
 			}
 		}
-		
 	};
 
 	@Override
@@ -99,18 +107,25 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
 				FileOutputStream fos = new FileOutputStream(mDbFileName);
 				fos.close();
 			} catch (IOException e) {
-				Log.e("dfdun", "e = "+e.toString());
+				Log.e("dfdun", "onCreate();e = "+e.toString());
 			}
 		}
 		// handler to display process dialog
 		mHandler = new  MyHandler(this);
 		
+		mPd = new ProgressDialog(this);
+        mPd.setCancelable(false);
+        mPd.setIndeterminate(true);
+        mPd.setTitle(getString(R.string.clear)+"...");
+        
 		mdb = new MyDB(this, mDbFileName, null , 1);
 	}
 
     @Override
     protected void onStop() {
         super.onStop();
+        if (mPd.isShowing())
+            mPd.dismiss();
         if(mProgressDialog != null && mProgressDialog.isShowing()){
             mProgressDialog.dismiss();
             mProgressDialog = null;
@@ -126,19 +141,21 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
 
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-	    switch(item.getItemId()){
-	    
-	    case R.id.about:
-	        AlertDialog.Builder ab = new AlertDialog.Builder(this);
-	        ab.setTitle(R.string.about);
-	        ab.setMessage(R.string.about_msg);
-	        ab.create().show();
-	        break;
-	    case R.id.exit:
-	        finish();
-	        break;
-	    }
+        switch (item.getItemId()) {
+        case R.id.exit:
+            stopService(new Intent(this, FloatService.class));
+            finish();
+            break;
+        case R.id.info:
+            startActivity(new Intent(this, PhoneInfo.class));
+            break;
+        case R.id.clear:
+            new ClearCache(this).execute("");
+            break;
+        case R.id.setting:
+            startActivity(new Intent(this, Preferences.class));
+            break;
+        }
         return true;
     }
 
@@ -239,4 +256,88 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
 			new SubThread(id).start();
 		}
 	};
+
+    class ClearCache extends AsyncTask<Object, Object, Object> {
+        Context con;
+        PackageManager pm;
+        Long time;
+        ArrayList<String> pns=new ArrayList<String>();
+        String temp=" - ";
+        ClearCache(Context context) {
+            super();
+            con = context;
+            pm = con.getPackageManager();
+            pns.clear();
+        }
+
+        
+        @Override
+        protected void onPreExecute() {
+            time = System.currentTimeMillis();
+            mPd.show();
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Object... values) {
+            mPd.setMessage(temp);
+        }
+
+        @SuppressWarnings("rawtypes")
+        @Override
+        protected Object doInBackground(Object... o) {
+            Class[] arrayOfClass=new Class[2];
+            Class c2=Long.TYPE;
+            arrayOfClass[0]=c2;
+            arrayOfClass[1]=IPackageDataObserver.class;
+            Long len=Long.valueOf(getEnvironmentSize()-1L);
+            Method m;
+            try {
+                m = pm.getClass().getMethod("freeStorageAndNotify", arrayOfClass);
+                m.invoke(pm, len,new IPackageDataObserver.Stub(){
+                    public void onRemoveCompleted(String packageName,boolean succeeded) {
+                                pns.add(packageName + "(" + succeeded + ")");
+                                temp=(packageName + "(" + succeeded + ")");
+                                Log.i("dfdun", "onRemoveCompleted;"+temp);
+//                                publishProgress(null);
+                 }});
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                PhoneInfo.log(e.toString());
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                PhoneInfo.log(e.toString());
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+                PhoneInfo.log(e.toString());
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+                PhoneInfo.log(e.toString());
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Object result) {
+            time = System.currentTimeMillis() - time;
+            mPd.hide();
+            showToast("Clear Cache Complete! "+time/1000.0+" s");
+        }
+
+        private long getEnvironmentSize()
+        {
+          File localFile = Environment.getDataDirectory();
+          long length;
+          if (localFile == null)
+            length = 0L;
+          while (true)
+          {
+            String str = localFile.getPath();
+            StatFs localStatFs = new StatFs(str);
+            long l2 = localStatFs.getBlockSize();
+            length = localStatFs.getBlockCount() * l2;
+            Log.i("dfdun", "size of EnvironmentSize is "+length);
+            return length;
+          }
+        }
+    }
 }

@@ -2,15 +2,20 @@ package cn.zzu.ie;
 
 import java.util.ArrayList;
 
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.PhoneLookup;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -22,8 +27,12 @@ public class MyDB extends SQLiteOpenHelper {
 
 	private String Table[]={"sms","contact","calls"};
 	private Context mContext;
-	private final Uri mSmsUri,mContactsUri,mCallsUri;
-	//private String path;
+    private static final Uri mSmsUri = Uri.parse("content://sms");
+    private static final Uri mContactsUri = ContactsContract.Contacts.CONTENT_URI;
+    private static final Uri mCallsUri = CallLog.Calls.CONTENT_URI;
+    private static final Uri mContactsRaw=Uri.parse("content://com.android.contacts/raw_contacts");
+    private static final Uri mContactsData=Uri.parse("content://com.android.contacts/data");
+	
 	public MyDB(Context context, String name, CursorFactory factory,
 			int version) {
 		/* context to use to open or create the database name of the database
@@ -33,12 +42,9 @@ public class MyDB extends SQLiteOpenHelper {
 		 */
 		super(context, name, factory, version);
 		mContext = context;
-		mSmsUri = Uri.parse("content://sms");
-		mContactsUri = ContactsContract.Contacts.CONTENT_URI;
-		mCallsUri = CallLog.Calls.CONTENT_URI;
         /*
-         * About contacts provider Contacts.People.CONTENT_URI; is for 1.6 and
-         * lower content://com.android.contacts/contacts        is for 2.x
+         * About contacts provider Contacts.People.CONTENT_URI; is for 1.6 and lower
+         *  content://com.android.contacts/contacts        is for 2.x
          * content://com.android.contacts/data                  is for 2.x
          * content://com.android.contacts/raw_contact           is for 2.x
          * ContactsContract.Contacts.CONTENT_URI                is for 2.x
@@ -103,25 +109,31 @@ public class MyDB extends SQLiteOpenHelper {
 		SQLiteDatabase sqlDb=this.getWritableDatabase();
 		cur.moveToFirst();
 		result[0]=cur.getCount();
-	    Log.i("dfdun", "backupCon: sum is "+result[0]);
 		int id ; String name;
+		ArrayList<String> backupNames = new ArrayList<String>();
+	    Cursor bkCur = sqlDb.query(Table[1], new String[]{"name"}, null, null, null, null,
+                null);
+	    bkCur.moveToFirst();
+	    while(!bkCur.isAfterLast()){
+	        backupNames.add(bkCur.getString(0));
+	        bkCur.moveToNext();
+	    }
+		bkCur.close();
 		while (!cur.isAfterLast()) {
 		    id = cur.getInt(0);
 		    name = cur.getString(1);
-            String sql = "(" + MyDatabase.CON[1] + "='" + name + "')";
-            if (0 < sqlDb.query(Table[1], null, sql, null, null, null,
-                    null).getCount()) {
-				cur.moveToNext();
-				continue;
-			}
+            if (backupNames.contains(name)) {
+                cur.moveToNext();
+                continue;
+            }
             String values[]=getNumbersEmails(id);
-            sql = "insert into " + Table[1] + "("
+            String sql = "insert into " + Table[1] + "("
                     + MyDatabase.toString(MyDatabase.CON) + ") values ("+
-					" ' "+name+" ',"+             //name
-					" ' "+values[0]+" ',"+        //values
-					" ' "+values[1]+" ',"+        //valuesType
-					" ' "+values[2]+" ',"+        //email
-					" ' "+values[3]+" ');" ;      //emailsType
+					" '"+name+"',"+             //name
+					" '"+values[0]+"',"+        //values
+					" '"+values[1]+"',"+        //valuesType
+					" '"+values[2]+"',"+        //email
+					" '"+values[3]+"');" ;      //emailsType
             if(!sqlDb.isOpen())
                 sqlDb = this.getWritableDatabase();
             sqlDb.execSQL(sql);
@@ -158,52 +170,58 @@ public class MyDB extends SQLiteOpenHelper {
 	    return new String[]{numbers.toString(),numbersType.toString(),
 	            emails.toString(),emailsType.toString()};
 	}
-	
-    public static void logCursor(Cursor c) {
-        String colName[] = c.getColumnNames();
-        int columnLen = c.getColumnCount();
-	    c.moveToFirst();
-	    Log.i("dfdun", " log start ]");
-        while (!c.isAfterLast()) {
-            int i =0;
-            String row="[ ", value;
-            for(;i<columnLen;i++){
-                value=c.getString(c.getColumnIndex(colName[i]));
-                if(value!=null)
-                    row+= " ("+colName[i]+":"+value+"),";
-            }
-            Log.i("dfdun", " " + row+" ]");
-            c.moveToNext();
-            return;
-        }
-	}
-    
+
 	int[] resumeContact() {
 		int result[]={0,0,0};
 		long start = System.currentTimeMillis();
 		Cursor c;
-		//ContentValues values= new ContentValues(9);
+		ContentResolver cr=mContext.getContentResolver();
 		SQLiteDatabase sqlDb = getReadableDatabase();
 		c = sqlDb.query(Table[1], null, null, null, null, null, null);
 		result[0] = c.getCount();
+		Log.i("dfdun", "resumeContact: sum is "+result[0]);
 		c.moveToFirst();
 		while(!c.isAfterLast()){
-		    //if(hasResumed(address, date)){
-		    //    c.moveToNext();continue;
-		    //}
-		    //cv.put(key, value);
-		    c.getInt(0);              //_id
-		    c.getString(1);           //name
-		    c.getString(2);           //numbers
-		    c.getString(3);           //numbersType
-		    c.getString(4);           //emails
-		    c.getString(5);           //emailsType
-		    //Uri rawContactUri=mContext.getContentResolver().insert(RawContacts.CONTENT_URI, values);
-		    //long rawContactId = ContentUris.parseId(rawContactUri);
-		    //insert to data
-		    
-		    //mContext.getContentResolver().insert(url, cv);
-		    //cv.clear();
+		    String numbers = c.getString(2),name=c.getString(1)/*,numberstype=c.getString(3)*/;
+		    String emails=c.getString(4) /*, emailstype=c.getString(5)*/; 
+		    String number = numbers.substring(0, numbers.length()-2);
+		    Uri uri=Uri.parse("content://com.android.contacts/data/phones/filter/"+number);
+		    Cursor cc = cr.query(uri, null,null, null, null);
+            if (cc.getCount() > 0) {
+                c.moveToNext();
+                continue;
+            }
+            ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+            ContentProviderOperation op1 = ContentProviderOperation
+                    .newInsert(mContactsRaw).withValue("account_name", null).build();
+            ops.add(op1);
+            ContentProviderOperation op2 = ContentProviderOperation
+                    .newInsert(mContactsData).withValueBackReference("raw_contact_id", 0)
+                    .withValue("mimetype", "vnd.android.cursor.item/name")
+                    .withValue("data2", name).build();
+            ops.add(op2);
+            ContentProviderOperation op3 = ContentProviderOperation
+                    .newInsert(mContactsData).withValueBackReference("raw_contact_id", 0)
+                    .withValue("mimetype", "vnd.android.cursor.item/phone_v2")
+                    .withValue("data1", number)
+                    .withValue("data2", "2")
+                    .build();
+            ops.add(op3);
+            ContentProviderOperation op4 = ContentProviderOperation
+                    .newInsert(mContactsData).withValueBackReference("raw_contact_id", 0)
+                    .withValue("mimetype", "vnd.android.cursor.item/email_v2")
+                    .withValue("data1", emails.substring(0, emails.length()-2))
+                    .withValue("data2", "2").build();
+            ops.add(op4);
+            try {
+                cr.applyBatch("com.android.contacts", ops);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                Log.e("dfdun", " 1 "+e.toString());
+            } catch (OperationApplicationException e) {
+                e.printStackTrace();
+                Log.e("dfdun", " 2 "+e.toString());
+            }
 		    result[1]++;
 		    c.moveToNext();
 		}
@@ -216,9 +234,21 @@ public class MyDB extends SQLiteOpenHelper {
 	int[] backupSms() {
 		int result[]={0,0,0};//sum=0, backup=0
 		long start = System.currentTimeMillis();
-		Cursor c;
         SQLiteDatabase sqlDb = this.getWritableDatabase();
-		c = mContext.getContentResolver().query(
+        
+        //��ȡ�ѱ��ݵĶ��ŵ� date  �洢��  ArrayList��
+        ArrayList<Long> al=new ArrayList<Long>();
+        Cursor cc = sqlDb.query(Table[0], MyDatabase.SMS_1, null, null,
+                null, null, "date DESC");
+        cc.moveToFirst();
+        while (!cc.isAfterLast()) {
+            al.add(cc.getLong(1));
+            cc.moveToNext();
+        }
+        cc.close();
+        
+        //��ѯ���ж���  
+        Cursor c = mContext.getContentResolver().query(
 		        mSmsUri,
 				MyDatabase.SMS,
 				"1=1",
@@ -228,21 +258,21 @@ public class MyDB extends SQLiteOpenHelper {
 		result[0] = c.getCount();
         while (!c.isAfterLast()) {
 		    // whether backup already?
-			if (hasBackupedSms(c.getString(2), c.getLong(4))) {
+            if (al.indexOf(c.getLong(4)) != -1) {
 				c.moveToNext();
 				continue;
 			}
 			String sql = "INSERT INTO "+Table[0]+" ("
 			            + MyDatabase.toString(MyDatabase.SMS)+" )  VALUES ( " + 
 						c.getInt(1)+","+
-						c.getString(2)+","+
+						" ' "+c.getString(2)+" ',"+
 						c.getInt(3)+","+
 						c.getLong(4)+","+
 						c.getInt(5)+","+
 						c.getInt(6)+","+
 						c.getInt(7)+","+
 						c.getInt(8)+","+
-						" ' "+c.getString(9) + " ');"; 	//care about '
+						" ' "+c.getString(9).replace("'", ",") + " ');"; 	//care about '
 			//Log.i("dfdun", "sql= "+sql);
 			if(!sqlDb.isOpen())
 	            sqlDb = this.getWritableDatabase();
@@ -256,35 +286,29 @@ public class MyDB extends SQLiteOpenHelper {
 		return result;
 	}
 
-    private boolean hasBackupedSms(String address, long date) {//
-        SQLiteDatabase sqlDb = this.getReadableDatabase();
-        Cursor c;
-        int len = 0;
-        String selection;
-        if (address != null) {
-            selection = " (" + MyDatabase.SMS_1[0] + "=" + address + " AND "
-                    + MyDatabase.SMS_1[1] + "=" + date + ")";
-        } else { // maybe address is null. for example,Draft box
-            selection = "(" + MyDatabase.SMS_1[1] + "=" + date + ")";
-        }
-        c = sqlDb.query(Table[0], MyDatabase.SMS_1, selection, null,
-                MyDatabase.SMS_1[0], null, "");
-        len = c.getCount();
-        c.close(); sqlDb.close();
-        return len > 0;
-    }
-
 	int[] resumeSms(){
 		int result[]={0,0,0};
 		long start = System.currentTimeMillis();
-		Cursor c;
-		ContentValues values = new ContentValues(9);
 		SQLiteDatabase sqlDb = getReadableDatabase();
-		c = sqlDb.query(Table[0], null, null, null, null, null, null);
+		
+		//��ѯ��ǰ���ж���  �洢 ÿ��date�� ArrayList��
+		Cursor cc = mContext.getContentResolver().query(mSmsUri,
+                MyDatabase.SMS_1, null, null, "date DESC");
+		ArrayList<Long> al=new ArrayList<Long>();
+		cc.moveToFirst();
+        while (!cc.isAfterLast()) {
+            al.add(cc.getLong(1));
+            cc.moveToNext();
+        }
+        cc.close();
+		
+        //ȡ�� �ѱ��ݵ����� ������Ϣ
+        ContentValues values = new ContentValues(9);
+        Cursor c = sqlDb.query(Table[0], null, null, null, null, null, "date DESC");
 		result[0] = c.getCount();
 		c.moveToFirst();
         while (!c.isAfterLast()) {
-            if (hasResumed(c.getString(2), c.getLong(4))) {
+            if (al.contains(c.getLong(4))) {
 				c.moveToNext();
 				continue;
 			}
@@ -306,21 +330,6 @@ public class MyDB extends SQLiteOpenHelper {
 		this.closeDb(sqlDb);
 		result[2] =(int)(System.currentTimeMillis() - start);
 		return result;
-	}
-
-	private boolean hasResumed(String address, long date){//
-		String selection;
-        if (address != null) {
-            selection = " (" + MyDatabase.SMS_1[0] + "=" + address + " AND "
-                    + MyDatabase.SMS_1[1] + "=" + date + ")";
-        } else {    // draft sms is not to resume
-            return true;
-        }
-		Cursor c = mContext.getContentResolver().query(mSmsUri,
-		        MyDatabase.SMS_1, selection, null, null);
-		int len = c.getCount();
-		c.close();
-		return len > 0;
 	}
 
 	int[] backupCalllog(){
@@ -354,13 +363,19 @@ public class MyDB extends SQLiteOpenHelper {
                 c.moveToNext();
                 continue;
             }
+            String phoneNumber =c.getString(1),name="";
+            Uri uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+            Cursor c_n=mContext.getContentResolver().query(uri, new String[]{PhoneLookup.DISPLAY_NAME},null,null,null);
+			if (c_n != null && c_n.moveToFirst()) {
+				name = c_n.getString(0);
+			}
             String sql = "INSERT INTO " + Table[2] + " ("
                     + MyDatabase.toString(MyDatabase.CALLS) + " )  VALUES ( "
                     + " ' " + c.getString(1) + "' ," + // number
                     c.getLong(2) + "," +               // date
                     c.getInt(3) + "," +                // duration
                     c.getInt(4) + " ," +               // type
-                    "'" + c.getString(5) + "');";      // name
+                    "'" + name + "');";      // name
             if(!sqlDb.isOpen())
                 sqlDb = this.getWritableDatabase();
             sqlDb.execSQL(sql);
@@ -416,6 +431,25 @@ public class MyDB extends SQLiteOpenHelper {
         result[2] =(int)(System.currentTimeMillis() - start);
         return result;
 	}
+	
+    static void logCursor(Cursor c) {
+        String colName[] = c.getColumnNames();
+        int columnLen = c.getColumnCount();
+        c.moveToFirst();
+        Log.i("dfdun", " log start ]");
+        while (!c.isAfterLast()) {
+            int i =0;
+            String row="[ ", value;
+            for(;i<columnLen;i++){
+                value=c.getString(c.getColumnIndex(colName[i]));
+                if(value!=null)
+                    row+= " ("+colName[i]+":"+value+"),";
+            }
+            Log.i("dfdun", " " + row+" ]");
+            c.moveToNext();
+        }
+        c.moveToFirst();
+    }
 	
 	static class MyDatabase {
 		static String SMS[] = new String[] { "_id", // auto ++

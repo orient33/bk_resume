@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" ><item
+        android:id="@+id/float_window"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/float_window"/>
+    <item
+        android:id="@+id/float_window2"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/float_window2"/>
+    <item
+        android:id="@+id/net_help"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/about"/>
+
+</menu>

@@ -1,33 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Backup_Resume</string>
+    <string name="app_name">备份恢复</string>
     
-    <string name="hello_world">Backup Contacts </string>
-    <string name="hello_world2">Resume Contacts </string>
-    <string name="hello_world3">Backup Sms</string>
-    <string name="hello_world4">Resume Sms</string>
-    <string name="hello_world5">Backup Call Log</string>
-    <string name="hello_world6">resume Call Log</string>
+    <string name="hello_world">备份联系人</string>
+    <string name="hello_world2">恢复联系人</string>
+    <string name="hello_world3">备份短信</string>
+    <string name="hello_world4">恢复短信</string>
+    <string name="hello_world5">备份通话记录</string>
+    <string name="hello_world6">恢复通话记录</string>
     
-    <string name="exit">Exit</string>
-    <string name="about">About</string>
-    <string name="about_msg">Version: 2.1.20130203 beta\nAuthor： orient33\nPlease email to email:459399671@qq.com ,
-        if you have some advices or bug etc.</string>
-    <string name="sd_not_ready">SD card is not ready !</string>    
+    <!-- 设置菜单 -->
+    <string name="exit">退出</string>
+    <string name="about">关于</string>
+    <string name="float_window">悬浮窗切换</string>
+    <string name="float_window2">固定悬浮窗</string>
+	<string name="phone_state">手机状态</string>
+	<string name="clear">清理缓存</string>
+	<string name="setting">设置</string>
+	
+    <string name="about_msg">\n版本：2014.04.30\n </string>
+    <string name="sd_not_ready">SD卡未准备就绪 !</string>
     
-    <string name="find">Find  </string>
-	<string name="backup">Backup  </string>
-	<string name="resume">Resume  </string>
+    <string name="find">找到  </string>
+	<string name="backup"> 备份了  </string>
+	<string name="resume"> 恢复了  </string>
 	
-	<string name="sms_sum">  SMS  </string>
-	<string name="backup_sms"> backup SMS .. </string>
-	<string name="resume_sms"> resume SMS .. </string>
+	<string name="sms_sum">  条短信  </string>
+	<string name="backup_sms"> 正在备份短信 .. </string>
+	<string name="resume_sms"> 正在恢复短信 .. </string>
 	
-	<string name="con_sum">  Contact  </string>
-	<string name="backup_con"> backup CONTACTS .. </string>
-	<string name="resume_con"> resume CONTACTS .. </string>
+	<string name="con_sum">  个联系人  </string>
+	<string name="backup_con"> 正在备份联系人 .. </string>
+	<string name="resume_con"> 正在恢复联系人 .. </string>
 	
-	<string name="calllog_sum">Call Log</string>
-	<string name="backup_calllog">backup Call Log</string>
-	<string name="resume_calllog">resume Call Log</string>
+	<string name="calllog_sum"> 条记录</string>
+	<string name="backup_calllog">正在备份通话记录..</string>
+	<string name="resume_calllog">正在恢复通话记录..</string>
+	
+
+    <string name="call_state">通话状态</string>
+    <string name="data_con"> 数据网络</string>
+    <string name="location"> 定位</string>
+    <string name="service_state"> 服务状态</string>
+    <string name="signal_state"> 信号状态</string>
+    
+    <string name="disconnected">未连接</string>
+    <string name="connecting">正在连</string>
+    <string name="connected">已连接</string>
+    <string name="suspended">假连接</string>
+    <string name="unknow">超认知</string>
+    <string name="float_title">悬浮窗显示类型</string>
+    <string-array name="float_arrays">
+        <item>仅显示 2G/3G</item>
+        <item >显示具体网络类型</item>
+    </string-array>
+    <string-array name="float_arrays_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    
+    <string name="net_help">2G:  GPRS EDGE CDMA 1xRTT IDEN;\n
+            3G:  UMTS EVDO_0 EVDO_A HSDPA HSUPA HSPA EVDO_B EHRPD HSPAP;\n
+            4G:  LTE\n</string>
 </resources>

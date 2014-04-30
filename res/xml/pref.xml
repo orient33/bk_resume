@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ListPreference 
+        android:key="displaymode"
+        android:title="@string/float_title"
+        android:defaultValue="0"
+        android:entries="@array/float_arrays"
+        android:entryValues="@array/float_arrays_values"
+        />
+
+    <PreferenceScreen
+        android:key="pref1"
+        android:title="@string/about"  />
+</PreferenceScreen>
