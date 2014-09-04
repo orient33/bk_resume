@@ -1,5 +1,6 @@
 package cn.zzu.ie;
 
+import cn.zzu.ie.cloud.Util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -9,13 +10,12 @@ import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 public class PhoneInfo extends Activity {
-
+	private static final String TAG ="PhoneInfo";
     TelephonyManager mTm;
     TextView mCallStateView;
     TextView mDataConView;
@@ -87,7 +87,7 @@ public class PhoneInfo extends Activity {
 
     protected void onStart() {
         super.onStart();
-        android.util.Log.d("dfdun", "PhoneInfo. onStart()  listen OK");
+        Util.logd(TAG, "PhoneInfo. onStart()  listen OK");
     }
     
     protected void onResume(){
@@ -291,6 +291,6 @@ public class PhoneInfo extends Activity {
     }
     
     static void log(String s) {
-        Log.i("dfdun", "PhoneInfo] " + s);
+        Util.logd(TAG, "PhoneInfo] " + s);
     }
 }

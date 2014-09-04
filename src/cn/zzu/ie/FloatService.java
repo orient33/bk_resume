@@ -1,5 +1,6 @@
 package cn.zzu.ie;
 
+import cn.zzu.ie.cloud.Util;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -53,16 +54,16 @@ public class FloatService extends Service implements OnClickListener {
 //                    mDirect = "<||>";
 //                    break;
 //                case 1:// in
-//                    mDirect = "<°˝°˝>";
+//                    mDirect = "<in>";
 //                    break;
 //                case 2:// out
-//                    mDirect = "<°¸°¸>";
+//                    mDirect = "<out>";
 //                    break;
 //                case 3:// in & out
-//                    mDirect = "<°¸°˝>";
+//                    mDirect = "<in&out>";
 //                    break;
 //                case 4:// suspend
-//                    mDirect = "<%%>";
+//                    mDirect = "<suspend>";
 //                    break;
 //                default:// -1 unknown;
 //                    mDirect = "<??>";
@@ -139,7 +140,7 @@ public class FloatService extends Service implements OnClickListener {
                 R.layout.float_view, null);// .findViewById(R.id.float_view);//
                                            // all ok ,whether //
         mParams = new WindowManager.LayoutParams();
-        mParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;// ”≈œ»º∂
+        mParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         mParams.format = PixelFormat.RGBA_8888;
         mParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -175,7 +176,7 @@ public class FloatService extends Service implements OnClickListener {
     }
 
     static void log(String msg) {
-        android.util.Log.i("dfdun", msg);
+        Util.logd("FloatService", msg);
     }
 
     @Override
