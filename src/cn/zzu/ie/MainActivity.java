@@ -7,8 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import cn.zzu.ie.cloud.Upload;
-import cn.zzu.ie.cloud.Util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -23,6 +21,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StatFs;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +31,6 @@ import android.widget.Toast;
  * */
 public class MainActivity extends Activity/*implements View.OnClickListener*/{
 
-	private static final String TAG = "MainActivity";
     //private View v[];
     private static ProgressDialog mProgressDialog,mPd;
     private String mDbFileName;
@@ -109,7 +107,7 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
 				FileOutputStream fos = new FileOutputStream(mDbFileName);
 				fos.close();
 			} catch (IOException e) {
-				Util.loge(TAG, "onCreate();e = "+e.toString());
+				Log.e("dfdun", "onCreate();e = "+e.toString());
 			}
 		}
 		// handler to display process dialog
@@ -153,9 +151,6 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
             break;
         case R.id.clear:
             new ClearCache(this).execute("");
-            break;
-        case R.id.bk_cloud:
-            Upload.getInstance(this).uploadFile();
             break;
         case R.id.setting:
             startActivity(new Intent(this, Preferences.class));
@@ -303,7 +298,7 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
                     public void onRemoveCompleted(String packageName,boolean succeeded) {
                                 pns.add(packageName + "(" + succeeded + ")");
                                 temp=(packageName + "(" + succeeded + ")");
-                                Util.logd(TAG, "onRemoveCompleted;"+temp);
+                                Log.i("dfdun", "onRemoveCompleted;"+temp);
 //                                publishProgress(null);
                  }});
             } catch (IllegalArgumentException e) {
@@ -340,7 +335,7 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
             StatFs localStatFs = new StatFs(str);
             long l2 = localStatFs.getBlockSize();
             length = localStatFs.getBlockCount() * l2;
-            Util.logd(TAG, "size of EnvironmentSize is "+length);
+            Log.i("dfdun", "size of EnvironmentSize is "+length);
             return length;
           }
         }

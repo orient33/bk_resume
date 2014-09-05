@@ -2,7 +2,6 @@ package cn.zzu.ie;
 
 import java.util.ArrayList;
 
-import cn.zzu.ie.cloud.Util;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -18,13 +17,14 @@ import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.PhoneLookup;
 import android.text.TextUtils;
+import android.util.Log;
 
 /* to create DB file, DB table;
  * and to resume sms,contacts; backup sms,contacts.
  * and return the result for the operation. 
  * */
 public class MyDB extends SQLiteOpenHelper {
-	private static final String TAG ="MyDB";
+
 	private String Table[]={"sms","contact","calls"};
 	private Context mContext;
     private static final Uri mSmsUri = Uri.parse("content://sms");
@@ -56,7 +56,7 @@ public class MyDB extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db){
-		Util.logd(TAG, "MyDB ] create db table ");
+		Log.i("dfdun", "MyDB ] create db table ");
 		db.execSQL("CREATE TABLE if not exists " +Table[0] +" ( " +
 		MyDatabase.SMS[0] + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 		MyDatabase.SMS[1] + " INTEGER , " +   // thread_id
@@ -179,7 +179,7 @@ public class MyDB extends SQLiteOpenHelper {
 		SQLiteDatabase sqlDb = getReadableDatabase();
 		c = sqlDb.query(Table[1], null, null, null, null, null, null);
 		result[0] = c.getCount();
-		Util.logd(TAG, "resumeContact: sum is "+result[0]);
+		Log.i("dfdun", "resumeContact: sum is "+result[0]);
 		c.moveToFirst();
 		while(!c.isAfterLast()){
 		    String numbers = c.getString(2),name=c.getString(1)/*,numberstype=c.getString(3)*/;
@@ -217,10 +217,10 @@ public class MyDB extends SQLiteOpenHelper {
                 cr.applyBatch("com.android.contacts", ops);
             } catch (RemoteException e) {
                 e.printStackTrace();
-                Util.loge(TAG, " 1 "+e.toString());
+                Log.e("dfdun", " 1 "+e.toString());
             } catch (OperationApplicationException e) {
                 e.printStackTrace();
-                Util.loge(TAG, " 2 "+e.toString());
+                Log.e("dfdun", " 2 "+e.toString());
             }
 		    result[1]++;
 		    c.moveToNext();
@@ -436,7 +436,7 @@ public class MyDB extends SQLiteOpenHelper {
         String colName[] = c.getColumnNames();
         int columnLen = c.getColumnCount();
         c.moveToFirst();
-        Util.logd(TAG, " log start ]");
+        Log.i("dfdun", " log start ]");
         while (!c.isAfterLast()) {
             int i =0;
             String row="[ ", value;
@@ -445,7 +445,7 @@ public class MyDB extends SQLiteOpenHelper {
                 if(value!=null)
                     row+= " ("+colName[i]+":"+value+"),";
             }
-            Util.logd(TAG, " " + row+" ]");
+            Log.i("dfdun", " " + row+" ]");
             c.moveToNext();
         }
         c.moveToFirst();
