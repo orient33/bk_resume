@@ -1,15 +1,15 @@
 package cn.zzu.ie;
 
-
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.util.Log;
+import cn.zzu.ie.cloud.Util;
 
 public class Preferences extends PreferenceActivity implements Preference.OnPreferenceClickListener
     ,Preference.OnPreferenceChangeListener{
 
+	private static final String TAG = "Preferences";
     static final String key="displaymode",key_about="pref1";
     Preference mP;
     @SuppressWarnings("deprecation")
@@ -24,14 +24,14 @@ public class Preferences extends PreferenceActivity implements Preference.OnPref
 
     @Override
     public boolean onPreferenceChange(Preference arg0, Object arg1) {
-        Log.i("dfdun","onPreferenceChange "+ arg0.getKey()+" , " + arg1.toString());
+        Util.logd(TAG, "onPreferenceChange "+ arg0.getKey()+" , " + arg1.toString());
         FloatService.setDisplayType(arg1.toString().equals("1"));
         return true;
     }
 
     @Override
     public boolean onPreferenceClick(Preference p) {
-        Log.i("dfdun", " onPreferenceClick " +p.getKey());
+        Util.logd(TAG, 	"onPreferenceClick " +p.getKey());
         if(p.getKey().equals(key_about)){
 
             AlertDialog.Builder ab = new AlertDialog.Builder(this);

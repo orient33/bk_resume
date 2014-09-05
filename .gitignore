@@ -7,3 +7,8 @@ assets/
 .settings/
 project.properties
 ic_launcher-web.png
+
+.gradle/
+.idea/
+build/
+local.properties
