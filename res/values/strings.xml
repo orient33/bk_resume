@@ -62,5 +62,4 @@
     <string name="net_help">2G:  GPRS EDGE CDMA 1xRTT IDEN;\n
             3G:  UMTS EVDO_0 EVDO_A HSDPA HSUPA HSPA EVDO_B EHRPD HSPAP;\n
             4G:  LTE\n</string>
-    <string name="bk_cloud">备份到百度云</string>
 </resources>
