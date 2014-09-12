@@ -63,4 +63,9 @@
             3G:  UMTS EVDO_0 EVDO_A HSDPA HSUPA HSPA EVDO_B EHRPD HSPAP;\n
             4G:  LTE\n</string>
     <string name="bk_cloud">备份到百度云</string>
+    <string name="logined">已经登录</string>
+    <string name="need_login">请先登录</string>
+    <string name="upload_fail">上传失败</string>
+    <string name="login_canceled">登录已取消</string>
+    <string name="exception">异常</string>
 </resources>

@@ -121,6 +121,7 @@ public class MainActivity extends Activity/*implements View.OnClickListener*/{
         mPd.setTitle(getString(R.string.clear)+"...");
         
 		mdb = new MyDB(this, mDbFileName, null , 1);
+		getSharedPreferences(Util.SP_Name, 0).edit().putString(Util.DB_Path_Key, mDbFileName).commit();
 	}
 
     @Override

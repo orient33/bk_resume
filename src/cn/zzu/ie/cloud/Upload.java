@@ -1,5 +1,6 @@
 package cn.zzu.ie.cloud;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -60,23 +61,27 @@ public class Upload {
 					b.setProgress(100, progress, false);
 					nm.notify(Util.Upload_Notification_ID, b.build());
 				}
-
 			};
+			final String fail = mContext.getString(R.string.upload_fail);
 			Thread workThread = new Thread(new Runnable() {
 				public void run() {
 					BaiduPCSClient api = new BaiduPCSClient();
 					api.setAccessToken(token);
-					BaiduPCSActionInfo.PCSFileInfoResponse res = api
-							.uploadFile(srcLocalPath, Util.Root_Path
-									+ "/myData.db", listener);
+					final BaiduPCSActionInfo.PCSFileInfoResponse res = api
+							.uploadFile(srcLocalPath, Util.Root_Path + "/myData.db", listener);
 
-					Util.logd(TAG, "BaiduPCSClient.uploadFile() ! "
-							+ srcLocalPath + "; error=" + res.status.errorCode
+					Util.logd(TAG, "uploadFile()  " + srcLocalPath + "; error=" + res.status.errorCode
 							+ ",msg=" + res.status.message);
+					if (!TextUtils.isEmpty(res.status.message)) {
+					  ((Activity)mContext).runOnUiThread(new Runnable(){
+						  public void run(){
+							Toast.makeText(mContext, fail+", "+res.status.message, Toast.LENGTH_SHORT).show();	
+						  }
+					  });
+					}
 				}
 			});
 			workThread.start();
-			Toast.makeText(mContext, "uploading...", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -84,17 +89,18 @@ public class Upload {
 		SharedPreferences sp = mContext.getSharedPreferences(Util.SP_Name, 0);
 		final String token = sp.getString(Util.Token_Key, "");
 		if (!TextUtils.isEmpty(token)) {
+			String logined = mContext.getString(R.string.logined);
 			String name = sp.getString(Util.Name_Key, "");
-			Toast.makeText(mContext, "logined :" + name, Toast.LENGTH_SHORT)
-					.show();
+			Toast.makeText(mContext, logined + " : " + name, Toast.LENGTH_SHORT).show();
 			return;
 		}
+		Toast.makeText(mContext, R.string.need_login, Toast.LENGTH_SHORT).show();
 		BaiduOAuth baiduOAuth = new BaiduOAuth();
+		final String exception = mContext.getString(R.string.exception);
 		BaiduOAuth.OAuthListener lis = new BaiduOAuth.OAuthListener() {
 			@Override
 			public void onException(String e) {
-				Toast.makeText(mContext, "onException() " + e,
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(mContext, exception + ", " + e, Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
@@ -108,17 +114,14 @@ public class Upload {
 
 			@Override
 			public void onCancel() {
-				Toast.makeText(mContext, "onCancel()", Toast.LENGTH_SHORT)
-						.show();
+				Toast.makeText(mContext, R.string.login_canceled, Toast.LENGTH_SHORT).show();
 			}
 		};
-		baiduOAuth.startOAuth(mContext, Util.API_key, new String[] { "basic",
-				"netdisk" }, lis);
+		baiduOAuth.startOAuth(mContext, Util.API_key, new String[] { "basic","netdisk" }, lis);
 	}
 
 	private void storeToken(String token, String name) {
-		mSp.edit().putString(Util.Token_Key, token)
-				.putString(Util.Name_Key, name).commit();
+		mSp.edit().putString(Util.Token_Key, token).putString(Util.Name_Key, name).commit();
 	}
 
 }
