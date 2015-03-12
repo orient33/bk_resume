@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.zzu.ie"
-    android:versionCode="20130705"
+    android:versionCode="20150312"
     android:versionName="2015.03.12" >
 	<uses-sdk android:minSdkVersion="8"	android:targetSdkVersion="17" />
     <uses-permission android:name="android.permission.READ_SMS" />
