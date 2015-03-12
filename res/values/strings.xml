@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">备份恢复</string>
     
-    <string name="hello_world">备份联系人</string>
-    <string name="hello_world2">恢复联系人</string>
+    <string name="hello_world">手机状态</string>
+    <string name="hello_world2">清理SD卡空目录</string>
     <string name="hello_world3">备份短信</string>
     <string name="hello_world4">恢复短信</string>
     <string name="hello_world5">备份通话记录</string>
@@ -18,8 +18,9 @@
 	<string name="clear">清理缓存</string>
 	<string name="setting">设置</string>
 	
-    <string name="about_msg">\n版本：2014.04.30\n </string>
+    <string name="about_msg">\n版本：%1$s \n </string>
     <string name="sd_not_ready">SD卡未准备就绪 !</string>
+    <string name="clear_empty">删除了 %1$s 个空目录, %2$s 个空文件\n  请返回键</string>
     
     <string name="find">找到  </string>
 	<string name="backup"> 备份了  </string>
@@ -58,6 +59,7 @@
         <item>0</item>
         <item>1</item>
     </string-array>
+    <string name="clear_cache_notice">清理完成, 耗时%1$s 秒</string>
     
     <string name="net_help">2G:  GPRS EDGE CDMA 1xRTT IDEN;\n
             3G:  UMTS EVDO_0 EVDO_A HSDPA HSUPA HSPA EVDO_B EHRPD HSPAP;\n

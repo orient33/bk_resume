@@ -2,6 +2,8 @@ package cn.zzu.ie;
 
 
 import android.app.AlertDialog;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -12,6 +14,7 @@ public class Preferences extends PreferenceActivity implements Preference.OnPref
 
     static final String key="displaymode",key_about="pref1";
     Preference mP;
+    String version="";
     @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +23,14 @@ public class Preferences extends PreferenceActivity implements Preference.OnPref
         mP =  this.findPreference(key);
         mP.setOnPreferenceChangeListener(this);
         this.findPreference(key_about).setOnPreferenceClickListener(this);
+        String ver="unknow";
+        try {
+            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+            ver = pi.versionName;
+        } catch (NameNotFoundException e) {
+            throw new RuntimeException("....hmm. not find self...");
+        }
+        version=this.getString(R.string.about_msg,ver);
     }
 
     @Override
@@ -36,7 +47,7 @@ public class Preferences extends PreferenceActivity implements Preference.OnPref
 
             AlertDialog.Builder ab = new AlertDialog.Builder(this);
             ab.setTitle(R.string.about);
-            ab.setMessage(R.string.about_msg);
+            ab.setMessage(version);
             ab.create().show();   
         }
         return true;
